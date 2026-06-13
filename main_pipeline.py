@@ -323,13 +323,8 @@ def analyze_text(text, user_id="Unknown"):
             ]
             results['similar_verses']['Gurbani'] = gurbani_matches
             
-        elif top_scripture == 'Gurbani':
-            # TF-IDF found nothing — last resort: use best similarity match
-            best = results['similar_verses'].get('Gurbani', [{}])[0]
-            results['predicted_author'] = {'author': best.get('author', 'Unknown'), 'confidence': best.get('score', 0.0), 'matched_text': best.get('text', '')}
-            results['predicted_raag']   = {'raag':   best.get('raag',   'Unknown'), 'confidence': best.get('score', 0.0), 'matched_text': best.get('text', '')}
         else:
-            if 'predicted_author' not in results:
+            if 'predicted_author' not in results or results['predicted_author']['author'] == 'Unknown':
                 results['predicted_author'] = {'author': 'N/A', 'confidence': 0.0}
                 results['predicted_raag']   = {'raag':   'N/A', 'confidence': 0.0}
 
