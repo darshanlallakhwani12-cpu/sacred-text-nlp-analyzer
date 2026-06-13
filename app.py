@@ -66,6 +66,9 @@ st.markdown(f"""
 # Sidebar: History Tab (Feature 6)
 # ============================================================
 with st.sidebar:
+    if st.button("🧹 Clear Server Cache (Fix Errors)"):
+        st.cache_resource.clear()
+        st.success("Cache cleared! Please refresh the page.")
     st.markdown("---")
     st.markdown("### 📜 Analysis History")
     
@@ -267,8 +270,11 @@ with tab1:
                 if similar:
                     st.markdown("### 📖 Cross-Scripture Similar Verses")
                     
-                    # Always show all 3 tabs
-                    sim_tabs = st.tabs(["🕉️ Gurbani", "☪️ Quran", "✝️ Bible"])
+                    # Always show all 3 tabs with debug lengths
+                    g_len = len(similar.get('Gurbani', []))
+                    q_len = len(similar.get('Quran', []))
+                    b_len = len(similar.get('Bible', []))
+                    sim_tabs = st.tabs([f"🕉️ Gurbani ({g_len})", f"☪️ Quran ({q_len})", f"✝️ Bible ({b_len})"])
                     
                     tab_colors = {'Gurbani': '#FF9800', 'Quran': '#4CAF50', 'Bible': '#2196F3'}
                     tab_icons  = {'Gurbani': '🕉️', 'Quran': '☪️', 'Bible': '✝️'}
