@@ -175,7 +175,7 @@ def analyze_text(text, user_id="Unknown"):
     is_gurbani = False
     
     # Strictly prevent Gurbani lookup for Islamic/Biblical languages to avoid cross-pollution
-    if results['language_code'] not in ['ar', 'ur', 'he', 'fa', 'tr']:
+    if lang_code not in ['ar', 'ur', 'he', 'fa', 'tr']:
         try:
             from nlp_engine.gurbani_lookup import find_gurbani_metadata
             meta = find_gurbani_metadata(results['original_text'], results['translated_text'])
