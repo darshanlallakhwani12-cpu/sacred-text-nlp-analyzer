@@ -44,8 +44,6 @@ t_bbe.csv
 *.sql
 
 # Cached Embeddings
-embeddings_cache/
-*.npy
 *.h5
 
 # Streamlit/App logs
