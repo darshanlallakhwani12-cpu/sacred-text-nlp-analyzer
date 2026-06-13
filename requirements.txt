@@ -1,11 +1,11 @@
+--extra-index-url https://download.pytorch.org/whl/cpu
+torch
 streamlit
 pandas
 scikit-learn
 transformers
 sentence-transformers
-spacy==3.8.0
---extra-index-url https://download.pytorch.org/whl/cpu
-torch
+spacy
 langdetect
 deep-translator
 SQLAlchemy
