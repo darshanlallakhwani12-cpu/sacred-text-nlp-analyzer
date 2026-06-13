@@ -31,8 +31,7 @@ env/
 ENV/
 .venv/
 
-# Environment variables & DB Config
-database/config.py
+# Environment variables
 .env
 
 # Large Datasets & DB backups

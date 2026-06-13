@@ -83,7 +83,7 @@ def save_to_history(results):
         query = """
             INSERT INTO history 
             (user_id, timestamp, input_text, language, sentiment, emotion, similar_verse)
-            VALUES (%s, %s, %s, %s, %s, %s, %s)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
         """
         
         # Get first similar verse as a string representation if available
