@@ -22,9 +22,9 @@ def load_hf_models():
     try:
         nlp = spacy.load("en_core_web_sm")
     except OSError:
-        import subprocess
-        print("Downloading spacy English model...")
-        subprocess.run(["python", "-m", "spacy", "download", "en_core_web_sm"])
+        import spacy.cli
+        print("Downloading en_core_web_sm model...")
+        spacy.cli.download("en_core_web_sm")
         nlp = spacy.load("en_core_web_sm")
     
     # HuggingFace Transformers
