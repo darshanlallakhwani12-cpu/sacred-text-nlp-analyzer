@@ -337,11 +337,13 @@ with tab1:
                                         </div>
                                         """, unsafe_allow_html=True)
                                     else:
+                                        author_val = v.get('author', '')
+                                        show_author = author_val and author_val.lower() not in ('unknown', '', 'none', 'n/a')
                                         st.markdown(f"""
                                         <div class="result-card" style="border-left-color: {color};">
                                             <p><b>#{j}</b> — Similarity: <b>{v['score']}%</b></p>
                                             <p><i>"{v.get('text', '')}"</i></p>
-                                            <p>{icon} {v.get('author', '')}</p>
+                                            {f'<p>{icon} <b>{author_val}</b></p>' if show_author else ''}
                                         </div>
                                         """, unsafe_allow_html=True)
                             else:
