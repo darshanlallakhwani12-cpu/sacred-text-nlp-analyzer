@@ -43,12 +43,9 @@ Arabic-Original.csv
 t_bbe.csv
 *.sql
 
-# Cached ML Models and Embeddings
-cache/
+# Cached Embeddings
 embeddings_cache/
-saved_models/
 *.npy
-*.pkl
 *.h5
 
 # Streamlit/App logs
