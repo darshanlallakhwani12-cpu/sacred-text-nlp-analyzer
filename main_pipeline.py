@@ -19,13 +19,18 @@ def load_hf_models():
     print("Loading NLP models... (This might take a few seconds)")
     
     # Spacy for Theme/Entity Extraction
+    nlp = None
     try:
         nlp = spacy.load("en_core_web_sm")
-    except OSError:
-        import spacy.cli
-        print("Downloading en_core_web_sm model...")
-        spacy.cli.download("en_core_web_sm")
-        nlp = spacy.load("en_core_web_sm")
+    except Exception:
+        print("Downloading en_core_web_sm model via subprocess...")
+        import subprocess
+        import sys
+        subprocess.check_call([sys.executable, "-m", "spacy", "download", "en_core_web_sm"])
+        try:
+            nlp = spacy.load("en_core_web_sm")
+        except Exception as e:
+            print(f"Critical failure loading Spacy: {e}")
     
     # HuggingFace Transformers
     emotion_model = pipeline("text-classification", model="j-hartmann/emotion-english-distilroberta-base", top_k=None)
@@ -238,14 +243,15 @@ def analyze_text(text, user_id="Unknown"):
 
     # 6. Theme / Entity Extraction
     try:
-        doc = nlp(text_to_analyze)
         extracted = []
+        if nlp is not None:
+            doc = nlp(text_to_analyze)
         
-        # 1. Spacy NER for real names/places
-        for ent in doc.ents:
-            if ent.label_ in ['PERSON', 'GPE', 'LOC', 'NORP'] and len(ent.text) > 2:
-                extracted.append((ent.text, "Proper Noun"))
-                
+            # 1. Spacy NER for real names/places
+            for ent in doc.ents:
+                if ent.label_ in ['PERSON', 'GPE', 'ORG', 'NORP', 'EVENT', 'LOC', 'FAC'] and len(ent.text) > 2:
+                    extracted.append((ent.text.title(), ent.label_))
+
         # 2. Authentic Sacred Themes mapping
         text_lower = text_to_analyze.lower()
         themes_found = set()
@@ -259,7 +265,7 @@ def analyze_text(text, user_id="Unknown"):
             extracted.append((theme, "Sacred Theme"))
             
         # 3. Fallback: Meaningful Key Concepts (Noun Chunks)
-        if len(themes_found) == 0:
+        if len(themes_found) == 0 and nlp is not None:
             for chunk in doc.noun_chunks:
                 # Exclude pronouns and generic determinants
                 if chunk.root.pos_ != 'PRON' and chunk.text.lower() not in ['i', 'me', 'my', 'you', 'your', 'he', 'him', 'his', 'she', 'her', 'it', 'its', 'we', 'us', 'our', 'they', 'them', 'their']:
