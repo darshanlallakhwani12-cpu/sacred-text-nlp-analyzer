@@ -138,7 +138,7 @@ def find_gurbani_metadata(original_text: str, translated_text: str) -> dict | No
         scores = cosine_similarity(q_vec, eng_mat)[0]
         best_i = int(np.argmax(scores))
         best_s = float(scores[best_i])
-        if best_s < 0.08:               # not enough overlap — don't guess
+        if best_s < 0.35:               # strict overlap required to prevent cross-scripture pollution
             return None
         conf = _boost(best_s, low=75, high=97)
         return _result(df.iloc[best_i], conf)

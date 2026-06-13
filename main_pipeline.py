@@ -173,31 +173,34 @@ def analyze_text(text, user_id="Unknown"):
 
     # 3.5 Authentic Gurbani Translation Override
     is_gurbani = False
-    try:
-        from nlp_engine.gurbani_lookup import find_gurbani_metadata
-        meta = find_gurbani_metadata(results['original_text'], results['translated_text'])
-        if meta:
-            is_gurbani = True
-            results['predicted_author'] = {'author': meta['author'], 'confidence': meta['confidence'], 'matched_text': meta['matched_gurmukhi'], 'ang': meta.get('ang', '')}
-            results['predicted_raag']   = {'raag':   meta['raag'],   'confidence': meta['confidence'], 'matched_text': meta['matched_gurmukhi'], 'ang': meta.get('ang', '')}
-            
-            # Override Google Translation with Authentic Database Translation
-            if meta.get('matched_english'):
-                text_to_analyze = meta['matched_english']
-                results['translated_text'] = text_to_analyze
+    
+    # Strictly prevent Gurbani lookup for Islamic/Biblical languages to avoid cross-pollution
+    if results['language_code'] not in ['ar', 'ur', 'he', 'fa', 'tr']:
+        try:
+            from nlp_engine.gurbani_lookup import find_gurbani_metadata
+            meta = find_gurbani_metadata(results['original_text'], results['translated_text'])
+            if meta:
+                is_gurbani = True
+                results['predicted_author'] = {'author': meta['author'], 'confidence': meta['confidence'], 'matched_text': meta['matched_gurmukhi'], 'ang': meta.get('ang', '')}
+                results['predicted_raag']   = {'raag':   meta['raag'],   'confidence': meta['confidence'], 'matched_text': meta['matched_gurmukhi'], 'ang': meta.get('ang', '')}
                 
-            # Stash the matched verse so we can filter similarity later
-            results['_gurbani_exact_match'] = {
-                'text':      meta['matched_gurmukhi'],
-                'english':   meta['matched_english'],
-                'raag':      meta['raag'],
-                'author':    meta['author'],
-                'scripture': 'Gurbani',
-                'score':     meta['confidence'],
-                'ang':       meta.get('ang', '')
-            }
-    except Exception as e:
-        print("Error in Gurbani Metadata Lookup")
+                # Override Google Translation with Authentic Database Translation
+                if meta.get('matched_english'):
+                    text_to_analyze = meta['matched_english']
+                    results['translated_text'] = text_to_analyze
+                    
+                # Stash the matched verse so we can filter similarity later
+                results['_gurbani_exact_match'] = {
+                    'text':      meta['matched_gurmukhi'],
+                    'english':   meta['matched_english'],
+                    'raag':      meta['raag'],
+                    'author':    meta['author'],
+                    'scripture': 'Gurbani',
+                    'score':     meta['confidence'],
+                    'ang':       meta.get('ang', '')
+                }
+        except Exception as e:
+            print("Error in Gurbani Metadata Lookup")
 
     # 4. Sentiment Analysis (all scores)
     try:
