@@ -267,22 +267,10 @@ with tab1:
                 similar = results.get('similar_verses', {})
                 input_text_clean = results.get('original_text', '').strip()
                 
-                # Debug expander — remove after verification
-                with st.expander("🔍 Debug: Similarity Data", expanded=False):
-                    st.write("similar_verses keys:", list(similar.keys()))
-                    for k, v in similar.items():
-                        st.write(f"{k}: {len(v)} matches")
-                        if v:
-                            st.write(f"  Top score: {v[0]['score']}")
-                
                 if similar:
                     st.markdown("### 📖 Cross-Scripture Similar Verses")
                     
-                    # Always show all 3 tabs with debug lengths
-                    g_len = len(similar.get('Gurbani', []))
-                    q_len = len(similar.get('Quran', []))
-                    b_len = len(similar.get('Bible', []))
-                    sim_tabs = st.tabs([f"🕉️ Gurbani ({g_len})", f"☪️ Quran ({q_len})", f"✝️ Bible ({b_len})"])
+                    sim_tabs = st.tabs(["🕉️ Gurbani", "☪️ Quran", "✝️ Bible"])
                     
                     tab_colors = {'Gurbani': '#FF9800', 'Quran': '#4CAF50', 'Bible': '#2196F3'}
                     tab_icons  = {'Gurbani': '🕉️', 'Quran': '☪️', 'Bible': '✝️'}
