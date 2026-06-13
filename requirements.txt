@@ -8,3 +8,6 @@ torch
 langdetect
 deep-translator
 SQLAlchemy
+matplotlib
+seaborn
+joblib
