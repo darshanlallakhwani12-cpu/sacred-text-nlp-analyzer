@@ -437,5 +437,5 @@ with tab2:
 # ============================================================
 # Footer
 # ============================================================
-st.markdown("---")
-st.markdown(f"<p style='text-align:center; color:{sub_text};'>Built with HuggingFace Transformers, SpaCy, Sentence Transformers, Scikit-Learn & Streamlit</p>", unsafe_allow_html=True)
+st.markdown("<hr>", unsafe_allow_html=True)
+st.markdown(f"<p style='text-align:center; color:{sub_text};'>© 2026 Multilingual Sacred Text NLP Analyzer. Developed by Darshan Lal.</p>", unsafe_allow_html=True)
