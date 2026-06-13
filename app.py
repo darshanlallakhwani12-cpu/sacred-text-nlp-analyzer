@@ -267,6 +267,14 @@ with tab1:
                 similar = results.get('similar_verses', {})
                 input_text_clean = results.get('original_text', '').strip()
                 
+                # Debug expander — remove after verification
+                with st.expander("🔍 Debug: Similarity Data", expanded=False):
+                    st.write("similar_verses keys:", list(similar.keys()))
+                    for k, v in similar.items():
+                        st.write(f"{k}: {len(v)} matches")
+                        if v:
+                            st.write(f"  Top score: {v[0]['score']}")
+                
                 if similar:
                     st.markdown("### 📖 Cross-Scripture Similar Verses")
                     

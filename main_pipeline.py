@@ -291,7 +291,10 @@ def analyze_text(text, user_id="Unknown"):
 
     # 7. Cross-Scripture Similarity
     try:
+        import traceback as _tb
+        print(f"[Similarity] Running find_similar on: {text_to_analyze[:60]}")
         results['similar_verses'] = find_similar(text_to_analyze, top_k=3)
+        print(f"[Similarity] Done. Keys: {list(results['similar_verses'].keys())}, counts: { {k: len(v) for k, v in results['similar_verses'].items()} }")
         
         # Determine the top scripture
         top_scripture = 'Unknown'
@@ -302,7 +305,9 @@ def analyze_text(text, user_id="Unknown"):
                 top_scripture = name
                 
     except Exception as e:
-        print("Error in Cross-Scripture Similarity")
+        import traceback as _tb
+        print(f"[Similarity] CRITICAL ERROR: {e}")
+        print(_tb.format_exc())
         results['similar_verses'] = {}
         top_scripture = 'Unknown'
 
