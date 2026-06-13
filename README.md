@@ -1,6 +1,6 @@
 # 🧠 Multilingual Sacred Text NLP Analyzer
 
-> An advanced, production-ready NLP Web Application for analyzing and comparing sacred texts across Gurbani, Quran, and Bible — powered by a MySQL database and cutting-edge Deep Learning models.
+> An advanced, production-ready NLP Web Application for analyzing and comparing sacred texts across Gurbani, Quran, and Bible — powered by a lightweight SQLite database and cutting-edge Deep Learning models.
 
 ---
 
@@ -14,7 +14,7 @@ At its core, the system:
 - Analyzes Sentiment, Emotion, Themes, and Author/Raag metadata
 - Finds semantically similar verses across three major scriptures
 
-All scripture data is stored in a professional **MySQL database (`sacred_text_db`)** containing over **97,000 verses** across 5 tables.
+All scripture data is stored in a lightweight **SQLite database (`sacred_text.db`)** containing over **97,000 verses** across 5 tables, optimized for cloud deployment.
 
 ---
 
@@ -28,19 +28,19 @@ All scripture data is stored in a professional **MySQL database (`sacred_text_db
 | 4 | **Sentiment Analysis** | 3-way classification (Positive / Neutral / Negative) with confidence score |
 | 5 | **Emotion Detection** | 7-way emotion classification (Joy, Sadness, Anger, Fear, Surprise, Disgust, Neutral) |
 | 6 | **Sacred Theme Extraction** | Domain-specific theological theme detection (e.g., Divine Identity, Devotion) |
-| 7 | **Session History** | Every analysis is logged to MySQL `history` table, filtered per user session |
+| 7 | **Session History** | Every analysis is logged to the `history` table, filtered per user session |
 | 8 | **Batch Analysis** | Upload a CSV file to run the full pipeline on multiple texts at once |
 | 9 | **Export Results** | Download any analysis result as a formatted CSV file |
-| 10 | **Dark / Light Mode** | Toggle between themes — preference saved during session |
+| 10 | **Clear Server Cache** | Force Streamlit to reload models and embeddings for immediate updates |
 
 ---
 
-## 🗄️ MySQL Database: `sacred_text_db`
+## 🗄️ SQLite Database: `sacred_text.db`
 
 | Table | Rows | Description |
 |-------|------|-------------|
 | `gurbani` | 60,555 | Full Siri Guru Granth Sahib — Gurmukhi, English, Transliteration, Raag, Writer, Ang |
-| `quran` | 6,235 | Holy Quran — Arabic original, Surah & Ayah numbers, English translation |
+| `quran` | 6,235 | Holy Quran — Arabic original, Surah & Ayah numbers, Sahih International English translation |
 | `bible` | 31,103 | Bible (BBE Translation) — Book, Chapter, Verse, English text |
 | `balanced_corpus` | 18,705 | Auto-balanced sample (6,235 per scripture) for similarity search |
 | `history` | Dynamic | Per-session user analysis log with timestamp, sentiment, emotion |
@@ -68,7 +68,7 @@ Input Text
 | Layer | Technology |
 |-------|-----------|
 | **Web App** | Streamlit |
-| **Database** | MySQL 8+ with `mysql-connector-python` & `SQLAlchemy` |
+| **Database** | SQLite3 |
 | **Deep Learning** | HuggingFace Transformers (RoBERTa, DistilRoBERTa) |
 | **Semantic Search** | Sentence Transformers (`all-MiniLM-L6-v2`) |
 | **Classical ML** | Scikit-Learn (TF-IDF, Cosine Similarity, SVM, Logistic Regression) |
@@ -87,35 +87,28 @@ NLP_Project/
 ├── app.py                              # Streamlit Frontend — UI, cards, tabs, history
 ├── main_pipeline.py                    # Core NLP Engine — orchestrates all analysis
 │
-├── database/                           # Database layer (Python package)
-│   ├── __init__.py
-│   ├── config.py                       # DB credentials (host, user, password)
-│   ├── db_connection.py                # MySQL connector — auto-creates DB & tables
-│   ├── balance_datasets.py             # Builds balanced_corpus table from MySQL
-│   ├── migrate_csv_to_mysql.py         # One-time CSV -> MySQL migration script
-│   └── setup_database.sql             # Manual SQL schema reference
+├── database/                           # Database layer
+│   ├── db_connection.py                # SQLite connector
+│   ├── sacred_text.db                  # Core SQLite Database
+│   ├── balance_datasets.py             # Script to build balanced_corpus table
+│   └── mysql_to_sqlite.py              # Script used for migrating from MySQL to SQLite
 │
 ├── nlp_engine/                         # NLP processing layer (Python package)
-│   ├── __init__.py
-│   ├── gurbani_lookup.py               # 4-Tier Gurbani metadata search (MySQL)
-│   ├── similarity.py                   # Cross-scripture semantic similarity (MySQL)
-│   └── classifiers.py                 # ML Author & Raag classifiers (MySQL)
+│   ├── gurbani_lookup.py               # 4-Tier Gurbani metadata search (SQLite)
+│   ├── similarity.py                   # Cross-scripture semantic similarity (SQLite)
+│   └── classifiers.py                  # ML Author & Raag classifiers
 │
-├── scripts/                            # Utility scripts (Python package)
-│   ├── __init__.py
-│   └── download_60k_fast.py           # Multi-threaded Gurbani downloader (1430 Angs)
-│
-├── cache/                              # ML model & embedding cache
-│   ├── embeddings_cache/              # Sentence embedding .npy files
-│   └── saved_models/                  # Trained classifier .pkl files
+├── cache/                              # ML model & embedding cache (Pre-computed for cloud)
+│   ├── embeddings_cache/               # Sentence embedding .npy files (Bible, Quran, Gurbani)
+│   └── saved_models/                   # Trained classifier .pkl files
 │
 ├── Dataset/                            # Raw CSV scripture source files
-│   ├── Arabic-Original.csv            # Quran (pipe-delimited: surah|ayah|arabic)
-│   └── t_bbe.csv                      # Bible BBE translation
+│   ├── Arabic-Original.csv             # Quran (pipe-delimited: surah|ayah|arabic)
+│   └── t_bbe.csv                       # Bible BBE translation
 │
 ├── batch_files/                        # Launcher scripts
-│   ├── run_streamlit.bat              # One-click app launcher (navigates to root)
-│   └── run_pipeline.bat               # Terminal pipeline runner
+│   ├── run_streamlit.bat               # One-click app launcher (navigates to root)
+│   └── run_pipeline.bat                # Terminal pipeline runner
 │
 └── README.md                           # This file
 ```
@@ -126,8 +119,7 @@ NLP_Project/
 
 ### Prerequisites
 - Python 3.10+
-- MySQL Server running locally (via XAMPP, MySQL Workbench, or standalone)
-- Default credentials: `host=localhost`, `user=root`, `password=root`
+- The project is fully standalone and requires no external database servers due to SQLite integration.
 
 ### Step 1 — Install Dependencies
 ```bash
@@ -135,17 +127,10 @@ pip install -r requirements.txt
 python -m spacy download en_core_web_sm
 ```
 
-### Step 2 — Migrate Data to MySQL *(First time only)*
-```bash
-python database/migrate_csv_to_mysql.py
-python database/balance_datasets.py
-```
-> ✅ The database `sacred_text_db` and all 5 tables are **auto-created** on first connection. No need to run any SQL manually.
+### Step 2 — Launch the App
+Double-click **`batch_files\run_streamlit.bat`** (Windows)
 
-### Step 3 — Launch the App
-Double-click **`batch_files\run_streamlit.bat`**
-
-Or run manually:
+Or run manually from the terminal:
 ```bash
 streamlit run app.py
 ```
@@ -162,10 +147,7 @@ transformers
 sentence-transformers
 spacy
 torch
-mysql-connector-python
-SQLAlchemy
 langdetect
 deep-translator
+joblib
 ```
-
-
