@@ -168,6 +168,4 @@ langdetect
 deep-translator
 ```
 
----
 
-*Built with ❤️ for scriptural analysis across traditions.*
